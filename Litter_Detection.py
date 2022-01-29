@@ -15,9 +15,9 @@ cascade = cv2.CascadeClassifier(path)
 while True:
     success, img = cap.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    scaleVal =1 + (cv2.getTrackbarPos("Scale", "Result") /1000)
+    scaleValue =1 + (cv2.getTrackbarPos("Scale", "Result") /1000)
     neig=cv2.getTrackbarPos("Neig", "Result")
-    objects = cascade.detectMultiScale(gray,scaleVal, neig)
+    objects = cascade.detectMultiScale(gray,scaleValue, neig)
     for (x,y,w,h) in objects:
         area = w*h
         minArea = cv2.getTrackbarPos("Min Area", "Result")
