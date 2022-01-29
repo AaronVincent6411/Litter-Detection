@@ -1,6 +1,6 @@
 import cv2
 
-path = 'haarcascades/haarcascade_frontalface_default.xml'
+path = 'haarcascade_frontalface_default.xml'
 color= (255,0,255)
 
 cap = cv2.VideoCapture(0)
