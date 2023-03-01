@@ -1,4 +1,4 @@
-# Litter_Detection
+# Litter-Detection
 It is a frequent sight to see people throwing banana peels, tin cans, plastic covers and bottles. Many people while using  roads spit there and throw wrappers and other wastes on the roadsides. It is disappointing to see the laziness and indifference of people ruining our environment.
 
 Birds and Animals consume these waste products, confusing them for food. They don't survive.
