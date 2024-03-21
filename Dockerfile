@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # Install libgl1-mesa-glx to fix libGL.so.1 error
-RUN apt-get update && apt-get install -y libgl1-mesa-glx
+RUN apt-get update && apt-get install -y libgl1-mesa-glx && apt-get install ffmpeg libsm6 libxext6  -y
 
 # Set the working directory in the container
 WORKDIR /app
