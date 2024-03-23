@@ -1,5 +1,8 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11
+FROM python:3.9-slim
+
+# Install libgl1-mesa-glx to fix libGL.so.1 error
+RUN apt-get update && apt-get install -y libgl1-mesa-glx
 
 # Set the working directory in the container
 WORKDIR /app
