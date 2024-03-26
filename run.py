@@ -1,67 +1,34 @@
-from flask import Flask, Response
 import cv2
+import numpy as np
+import streamlit as st
 from ultralytics import YOLO
-
-app = Flask(__name__)
 
 model = YOLO('trash_best.pt')
 
-def gen():
-    cap = cv2.VideoCapture(0)
+st.set_page_config(layout='wide')
 
+def main():
+    st.markdown("<style>body {background-color: white;}</style>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>Litter Detection</h1>", unsafe_allow_html=True)
+
+    # col1, col2 = st.columns([1, 1]) 
+
+    # with col2:
+    cap = cv2.VideoCapture(0)
+    frame_container = st.empty()
     while cap.isOpened():
         success, frame = cap.read()
+        if not success:
+            st.error("Failed to capture image.")
+            continue
 
-        if success:
-            results = model(frame)
+        results = model(frame)
+        annotated_frame = results[0].plot()
+        annotated_frame = cv2.resize(annotated_frame, (720, 480))
 
-            annotated_frame = results[0].plot()
+        frame_container.image(annotated_frame, channels="BGR", use_column_width=(720,600))
 
-            image_np = cv2.resize(annotated_frame,(840,660))
-            # cv2.imshow("Litter Detection", image_np)
+    cap.release()    
 
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-
-            ret, buffer = cv2.imencode('.jpg', image_np)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-        else:
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-
-@app.route('/')
-def video_feed():
-    return Response(gen(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, threaded=True)
-
-# import cv2
-# from ultralytics import YOLO
-
-# model = YOLO('trash_best.pt')
-
-# cap = cv2.VideoCapture(0)
-
-# while cap.isOpened():
-#     success, frame = cap.read()
-
-#     if success:
-#         results = model(frame)
-
-#         annotated_frame = results[0].plot()
-
-#         image_np = cv2.resize(annotated_frame,(840,660))
-#         cv2.imshow("Litter Detection", image_np)
-
-#         if cv2.waitKey(1) & 0xFF == ord("q"):
-#             break
-
-# cap.release()
-# cv2.destroyAllWindows()
+if __name__ == "__main__":
+    main()
