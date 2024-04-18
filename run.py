@@ -1,23 +1,67 @@
+from flask import Flask, Response
 import cv2
 from ultralytics import YOLO
 
-model = YOLO('best.pt')
+app = Flask(__name__)
 
-cap = cv2.VideoCapture(1)
+model = YOLO('trash_best.pt')
 
-while cap.isOpened():
-    success, frame = cap.read()
+def gen():
+    cap = cv2.VideoCapture(0)
 
-    if success:
-        results = model(frame)
+    while cap.isOpened():
+        success, frame = cap.read()
 
-        annotated_frame = results[0].plot()
+        if success:
+            results = model(frame)
 
-        image_np = cv2.resize(annotated_frame,(840,660))
-        cv2.imshow("Litter Detection", image_np)
+            annotated_frame = results[0].plot()
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+            image_np = cv2.resize(annotated_frame,(840,660))
+            # cv2.imshow("Litter Detection", image_np)
+
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+
+            ret, buffer = cv2.imencode('.jpg', image_np)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        else:
             break
 
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()
+
+@app.route('/')
+def video_feed():
+    return Response(gen(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True, threaded=True)
+
+# import cv2
+# from ultralytics import YOLO
+
+# model = YOLO('trash_best.pt')
+
+# cap = cv2.VideoCapture(0)
+
+# while cap.isOpened():
+#     success, frame = cap.read()
+
+#     if success:
+#         results = model(frame)
+
+#         annotated_frame = results[0].plot()
+
+#         image_np = cv2.resize(annotated_frame,(840,660))
+#         cv2.imshow("Litter Detection", image_np)
+
+#         if cv2.waitKey(1) & 0xFF == ord("q"):
+#             break
+
+# cap.release()
+# cv2.destroyAllWindows()
